@@ -1,0 +1,31 @@
+{
+  "manifest_version": 3,
+  "name": "Roblox Server Hopper",
+  "version": "1.0.0",
+  "description": "Smart server hopping for Roblox - marks visited servers and joins random new ones",
+  "permissions": [
+    "storage",
+    "scripting"
+  ],
+  "host_permissions": [
+    "https://www.roblox.com/*"
+  ],
+  "content_scripts": [
+    {
+      "matches": ["https://www.roblox.com/*"],
+      "js": ["content.js"],
+      "run_at": "document_end"
+    }
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "Roblox Server Hopper"
+  },
+  "icons": {
+    "48": "images/icon48.svg",
+    "128": "images/icon128.svg"
+  }
+}
