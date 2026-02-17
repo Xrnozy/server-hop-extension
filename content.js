@@ -22,6 +22,21 @@
     const style = document.createElement('style');
     style.id = 'roblox-server-hopper-css';
     style.textContent = `
+      #roblox-random-join-button,
+      #roblox-settings-button {
+        display: inline-block !important;
+        visibility: visible !important;
+        opacity: 1 !important;
+        position: relative !important;
+        z-index: 1000 !important;
+      }
+
+      #roblox-random-join-button:hover,
+      #roblox-settings-button:hover {
+        transform: translateY(-2px) !important;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3) !important;
+      }
+
       .roblox-visited-server {
         border: 2px solid #00b06f !important;
         box-shadow: inset 0 0 0 2px #00b06f !important;
@@ -394,20 +409,50 @@
 
   // Add "Join Random Server" button with settings
   function addRandomJoinButton() {
+    // Only add button if we're on the game instances page
+    const placeId = getPlaceId();
+    console.log('🔍 addRandomJoinButton called, placeId:', placeId, 'hash:', window.location.hash);
+    
+    if (!placeId) {
+      console.log('⚠️ Not on a game page, skipping button creation');
+      return;
+    }
+
+    // Check if we're on the game instances page specifically
+    const isGameInstancesPage = window.location.hash.includes('game-instances');
+    console.log('📊 isGameInstancesPage:', isGameInstancesPage);
+    
+    if (!isGameInstancesPage) {
+      console.log('⚠️ Not on game instances page (hash:', window.location.hash, '), skipping button creation');
+      return;
+    }
+
+    console.log(`🎮 Game instances page detected, Place ID: ${placeId}`);
+
     const tryAdd = () => {
       // Check if button already exists
       if (document.getElementById('roblox-random-join-button')) {
         console.log('✅ Random Join button already exists');
-        return;
+        return true;
       }
 
-      // Create button container with styling to match server-list-options
-      const buttonContainer = document.createElement('div');
-      buttonContainer.style.cssText = `
-        display: flex;
-        gap: 8px;
-        align-items: center;
-        padding: 0 4px;
+      // Check if page is loaded - look for server-list-options
+      const serverListOptions = document.querySelector('.server-list-options');
+      if (!serverListOptions) {
+        console.log('⏳ Page not ready yet, .server-list-options not found');
+        return false;
+      }
+
+      console.log('🏗️ Creating button elements...');
+
+      // Create button wrapper div
+      const buttonWrapper = document.createElement('div');
+      buttonWrapper.id = 'roblox-buttons-wrapper';
+      buttonWrapper.style.cssText = `
+        display: flex !important;
+        gap: 8px !important;
+        align-items: center !important;
+        margin-left: 16px !important;
       `;
 
       // Random Join button
@@ -416,25 +461,30 @@
       randomButton.textContent = 'Join Random';
       randomButton.type = 'button';
       randomButton.style.cssText = `
-        padding: 10px 16px;
-        background-color: #00b06f;
-        color: white;
-        border: none;
-        border-radius: 4px;
-        cursor: pointer;
-        font-weight: 600;
-        font-size: 13px;
-        font-family: inherit;
-        transition: all 0.2s ease;
-        z-index: 999;
+        padding: 8px 16px !important;
+        background-color: #00b06f !important;
+        color: white !important;
+        border: none !important;
+        border-radius: 4px !important;
+        cursor: pointer !important;
+        font-weight: 600 !important;
+        font-size: 12px !important;
+        font-family: 'Helvetica Neue', Arial, sans-serif !important;
+        transition: all 0.2s ease !important;
+        z-index: 100 !important;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15) !important;
       `;
 
       randomButton.addEventListener('mouseover', () => {
-        randomButton.style.backgroundColor = '#009058';
+        randomButton.style.backgroundColor = '#009058 !important';
+        randomButton.style.transform = 'translateY(-2px) !important';
+        randomButton.style.boxShadow = '0 4px 12px rgba(0, 176, 111, 0.3) !important';
       });
 
       randomButton.addEventListener('mouseout', () => {
-        randomButton.style.backgroundColor = '#00b06f';
+        randomButton.style.backgroundColor = '#00b06f !important';
+        randomButton.style.transform = 'translateY(0) !important';
+        randomButton.style.boxShadow = '0 2px 8px rgba(0, 0, 0, 0.15) !important';
       });
 
       randomButton.addEventListener('click', handleJoinRandom);
@@ -444,101 +494,65 @@
       settingsButton.id = 'roblox-settings-button';
       settingsButton.textContent = '⚙️ Settings';
       settingsButton.type = 'button';
-      settingsButton.title = 'Set max player count';
+      settingsButton.title = 'Set max player count & sort options';
       settingsButton.style.cssText = `
-        padding: 10px 16px;
-        background-color: #FF6B6B;
-        color: white;
-        border: none;
-        border-radius: 4px;
-        cursor: pointer;
-        font-weight: 600;
-        font-size: 13px;
-        font-family: inherit;
-        transition: all 0.2s ease;
-        z-index: 999;
+        padding: 8px 16px !important;
+        background-color: #FF6B6B !important;
+        color: white !important;
+        border: none !important;
+        border-radius: 4px !important;
+        cursor: pointer !important;
+        font-weight: 600 !important;
+        font-size: 12px !important;
+        font-family: 'Helvetica Neue', Arial, sans-serif !important;
+        transition: all 0.2s ease !important;
+        z-index: 100 !important;
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15) !important;
       `;
 
       settingsButton.addEventListener('mouseover', () => {
-        settingsButton.style.backgroundColor = '#FF5252';
+        settingsButton.style.backgroundColor = '#FF5252 !important';
+        settingsButton.style.transform = 'translateY(-2px) !important';
+        settingsButton.style.boxShadow = '0 4px 12px rgba(255, 107, 107, 0.3) !important';
       });
 
       settingsButton.addEventListener('mouseout', () => {
-        settingsButton.style.backgroundColor = '#FF6B6B';
+        settingsButton.style.backgroundColor = '#FF6B6B !important';
+        settingsButton.style.transform = 'translateY(0) !important';
+        settingsButton.style.boxShadow = '0 2px 8px rgba(0, 0, 0, 0.15) !important';
       });
 
       settingsButton.addEventListener('click', showPlayerCountSettings);
 
-      buttonContainer.appendChild(randomButton);
-      buttonContainer.appendChild(settingsButton);
+      // Append buttons to wrapper
+      buttonWrapper.appendChild(randomButton);
+      buttonWrapper.appendChild(settingsButton);
 
-      // Target the server-list-options area
-      let serverListOptions = document.querySelector('.server-list-options');
-      if (serverListOptions) {
-        serverListOptions.appendChild(buttonContainer);
-        console.log('✅ Random Join buttons added to server-list-options');
-        return;
-      }
-
-      // Fallback: Try to add next to Play button
-      let playButton = document.querySelector('button[aria-label*="Play"]') ||
-                       document.querySelector('button[aria-label*="play"]') ||
-                       Array.from(document.querySelectorAll('button')).find(btn => 
-                         btn.textContent.toLowerCase().includes('play') && 
-                         btn.textContent.toLowerCase().includes('game')
-                       );
-
-      if (playButton && playButton.parentNode) {
-        playButton.parentNode.insertBefore(buttonContainer, playButton.nextSibling);
-        console.log('✅ Random Join buttons added next to Play button');
-        return;
-      }
-
-      // Last fallback: Look for game header or action buttons area
-      let actionArea = document.querySelector('.DynamicHeadingResponsive-headingContainer') ||
-                       document.querySelector('[class*="action"]') ||
-                       document.querySelector('[class*="button"]')?.parentElement;
-
-      if (actionArea) {
-        actionArea.appendChild(buttonContainer);
-        console.log('✅ Random Join buttons added to action area');
-        return;
-      }
-
-      // Last resort: Add as floating buttons
-      let container = document.createElement('div');
-      container.style.cssText = `
-        position: fixed;
-        top: 80px;
-        right: 20px;
-        z-index: 10000;
-        display: flex;
-        gap: 8px;
-      `;
-      container.appendChild(randomButton);
-      container.appendChild(settingsButton);
-      document.body.appendChild(container);
-      console.log('✅ Random Join buttons added as floating buttons (top-right)');
+      // Add to server-list-options container
+      serverListOptions.appendChild(buttonWrapper);
+      console.log('✅ Buttons added to .server-list-options');
+      console.log('✅ Random Join button in DOM:', document.body.contains(randomButton));
+      console.log('✅ Settings button in DOM:', document.body.contains(settingsButton));
+      return true;
     };
 
-    // Try to add immediately
-    tryAdd();
-    
-    // Keep retrying every 1 second for up to 10 seconds
+    // Keep retrying until buttons are added or max attempts reached
     let attempts = 0;
     const retryInterval = setInterval(() => {
-      if (document.getElementById('roblox-random-join-button')) {
+      const success = tryAdd();
+      
+      if (success) {
+        console.log('✅ Button successfully placed, stopping retries');
         clearInterval(retryInterval);
         return;
       }
       
-      if (attempts++ < 10) {
-        tryAdd();
-      } else {
+      attempts++;
+      if (attempts >= 30) {
         clearInterval(retryInterval);
-        console.log('⚠️ Could not find suitable location for button after 10 attempts');
+        console.log('⚠️ Could not add buttons after 30 attempts (15 seconds)');
       }
-    }, 1000);
+    }, 500); // Check every 500ms
   }
 
   // Show player count settings modal
@@ -1116,11 +1130,15 @@
         refreshBtn.addEventListener('click', async (e) => {
           console.log('🔄 Refresh button clicked');
           
+          // Always clear the visited servers array when refresh is clicked
+          chrome.storage.local.set({ [VISITED_SERVERS_KEY]: {} });
+          console.log('🗑️ Visited servers array cleared');
+          
           // Get the refresh reset preference
           const shouldReset = await getRefreshResetPreference();
           
           if (shouldReset) {
-            console.log('♻️ Refreshing and resetting highlights...');
+            console.log('♻️ Resetting visual highlights...');
             
             // Wait a bit for the page to update after refresh
             await new Promise(resolve => setTimeout(resolve, 1000));
@@ -1134,9 +1152,9 @@
             // Re-apply highlights based on visited servers (green border only)
             colorVisitedServersOnPage();
             
-            console.log('✅ Highlights reset on refresh');
+            console.log('✅ Visual highlights reset');
           } else {
-            console.log('✨ Refresh complete, keeping highlights');
+            console.log('✨ Keeping visual highlights');
           }
         });
       } else {
@@ -1148,6 +1166,8 @@
   // Initialize
   function initializeExtension() {
     console.log('🚀 Roblox Server Hopper initialized');
+    console.log('📍 Current URL:', window.location.href);
+    console.log('🏷️ Hash:', window.location.hash);
     
     // Inject CSS first
     injectCSS();
@@ -1161,8 +1181,14 @@
     // Hook into join clicks
     hookJoinButtons();
 
-    // Add random join button
+    // Add random join button (try multiple times on initialization)
     addRandomJoinButton();
+    
+    // Monitor hash changes and re-add button if hash changes to game-instances
+    window.addEventListener('hashchange', () => {
+      console.log('🔗 Hash changed to:', window.location.hash);
+      addRandomJoinButton();
+    });
 
     // Setup auto-hop on key press
     setupAutoHop();
